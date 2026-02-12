@@ -2,10 +2,14 @@ FROM golang:alpine AS builder
 
 WORKDIR /app
 
+COPY go.mod go.sum .
+
+RUN go mod download
+
 COPY . .
 
 # Build the application
-RUN go build -o expenseowl ./cmd/expenseowl
+RUN CGO_ENABLED=0 go build -ldflags "-s -w" -o expenseowl ./cmd/expenseowl
 
 # Use a minimal alpine image for running
 FROM alpine:latest
